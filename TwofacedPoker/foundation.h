@@ -8,6 +8,8 @@ class User
 private:
 	std::string name;
 	int winCount;
+	int chips;
+
 public:
 	User(std::string name, int winCount) : name(name), winCount(winCount) { }
 

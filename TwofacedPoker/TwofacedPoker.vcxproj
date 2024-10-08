@@ -108,6 +108,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -124,12 +125,17 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="deck.cpp" />
+    <ClCompile Include="Game_Manager.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Client_Handle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Client_Handle.h" />
     <ClInclude Include="deck.h" />
     <ClInclude Include="foundation.h" />
   </ItemGroup>

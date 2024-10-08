@@ -11,7 +11,7 @@ private:
 	int chips;
 
 public:
-	User(std::string name, int winCount) : name(name), winCount(winCount) { }
+	User(std::string name, int winCount) : name(name), winCount(winCount), chips(0) { }
 
 	std::string getName() const {
 		return name;

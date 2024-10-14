@@ -21,8 +21,14 @@ void ConnectClient(SOCKET clientSocket);
 
 class ClientEventHandler
 {
+public:
+	std::string getRoomName()
+	{
+		return this->roomName;
+	}
 private:
 	SOCKET socket;
+	std::string ID;
 	std::string roomName;
 	
 	void Handle_Get_Chatting_Room();
@@ -30,6 +36,7 @@ private:
 	void Handle_Create_Chatting_Room(const std::string& message);
 	void Handle_Join_Chatting_Room(const std::string& message);
 	void Handle_Login();
+	void Handle_Room_Message(const std::string& message);
 public:
 	ClientEventHandler(SOCKET clientSocket);
 	bool handleMessage(const std::string& message);

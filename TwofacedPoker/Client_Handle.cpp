@@ -1,5 +1,6 @@
 #include "Client_Handle.h"
 static std::map<std::string, std::set<SOCKET>> chatRooms;
+static std::map<std::string, int> Room_count;
 static int clientNumber = 1;
 
 std::mutex chatRoom_mutex;
@@ -34,11 +35,7 @@ bool ClientEventHandler::handleMessage(const std::string& message)
 	}
 	else
 	{
-		std::cout << "[Log] : roomName : " << this->roomName << std::endl;
-		for (SOCKET target_socket : chatRooms[this->roomName])
-		{
-			send(target_socket, message.c_str(), message.length(), 0);
-		}
+		Handle_Room_Message(message);
 	}
 	return true;
 }
@@ -62,6 +59,16 @@ void ClientEventHandler::Handle_Get_Chatting_Room()
 void ClientEventHandler::Handle_Exit_Room()
 {
 	std::cout << "[Log] : " << "Handle_exit_Room" << std::endl;
+	std::string exit_message = "";
+	for (SOCKET target_socket : chatRooms[this->roomName])
+	{
+		if (socket != target_socket)
+		{
+			exit_message = this->ID + " exited.";
+			send(target_socket, exit_message.c_str(), exit_message.length(), 0);
+		}
+	}
+
 	chatRooms[roomName].erase(this->socket);
 	const std::lock_guard<std::mutex> lock(chatRoom_mutex);
 	if (chatRooms[roomName].empty())
@@ -92,28 +99,49 @@ void ClientEventHandler::Handle_Join_Chatting_Room(const std::string& message)
 {
 	this->roomName = message;
 	std::string send_message = "";
+	std::string join_message = "";
 	{
 		const std::lock_guard<std::mutex> lock(chatRoom_mutex);
 		if (chatRooms.find(roomName) != chatRooms.end())
 		{
 			send_message = roomName;
 			chatRooms[message].insert(socket);
+			for (SOCKET target_socket : chatRooms[this->roomName])
+			{
+				if (socket != target_socket)
+				{
+					join_message = this->ID + " Joined.";
+					send(target_socket, join_message.c_str(), join_message.length(), 0);
+				}
+			}
 		}
 		else
 		{
 			send_message = NOT_EXIST_ROOM;
 		}
 	}
+
 	send(socket, send_message.c_str(), send_message.length(), 0);
 }
 
 void ClientEventHandler::Handle_Login()
 {
-	std::string send_message = "ID : Guest" + std::to_string(clientNumber);
+	this->ID = "Guest" + std::to_string(clientNumber);
+	std::string send_message = "ID : " + this->ID;
 	clientNumber++;
 	send(socket, send_message.c_str(), send_message.length(), 0);
 }
 
+void ClientEventHandler:: Handle_Room_Message(const std::string& message)
+{
+	std::cout << "[Log] : roomName : " << this->roomName << "Message : " << message << std::endl;
+	std::string send_message = "[" + this->ID + "]" + message;
+
+	for (SOCKET target_socket : chatRooms[this->roomName])
+	{
+		send(target_socket, send_message.c_str(), send_message.length(), 0);
+	}
+}
 void ConnectClient(SOCKET clientSocket)
 {
 	ClientEventHandler handler(clientSocket);

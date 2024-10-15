@@ -16,6 +16,7 @@ const std::string GET_CHATTING_ROOM = "/Get_Chatting_Room";
 const std::string CREATE_CHATTING_ROOM = "/Create_Chatting_Room ";
 const std::string JOIN_CHATTING_ROOM = "/Join_Chatting_Room ";
 const std::string LOGIN = "/Login";
+const std::string GAME_EVENT = "/Game ";
 
 void ConnectClient(SOCKET clientSocket);
 

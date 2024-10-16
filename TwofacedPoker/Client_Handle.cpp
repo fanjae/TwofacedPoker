@@ -8,6 +8,14 @@ static int clientNumber = 1;
 
 std::mutex chatRoom_mutex;
 
+const std::map<std::string, std::set<SOCKET>>& GetChatRooms() {
+	return chatRooms;
+}
+
+const std::map<std::string, int>& GetRoomCounts() {
+	return Room_count;
+}
+
 ClientEventHandler::ClientEventHandler(SOCKET clientSocket) : socket(clientSocket) {}
 bool ClientEventHandler::handleMessage(const std::string& message)
 {
@@ -25,11 +33,11 @@ bool ClientEventHandler::handleMessage(const std::string& message)
 	}
 	else if (message.substr(0, CREATE_CHATTING_ROOM.length()) == CREATE_CHATTING_ROOM)
 	{
-		Handle_Create_Chatting_Room(message.substr(CREATE_CHATTING_ROOM.length(), message.length()));
+		Handle_Create_Chatting_Room(message.substr(CREATE_CHATTING_ROOM.length()));
 	}
 	else if (message.substr(0, JOIN_CHATTING_ROOM.length()) == JOIN_CHATTING_ROOM)
 	{
-		Handle_Join_Chatting_Room(message.substr(JOIN_CHATTING_ROOM.length(), message.length()));
+		Handle_Join_Chatting_Room(message.substr(JOIN_CHATTING_ROOM.length()));
 	}
 	else if (message.substr(0, CLOSE_SOCKET.length()) == CLOSE_SOCKET)
 	{
@@ -39,7 +47,7 @@ bool ClientEventHandler::handleMessage(const std::string& message)
 	else if (message.substr(0, GAME_EVENT.length()) == GAME_EVENT)
 	{
 		const std::string tempRoomName = this->roomName;
-		gameManagers[tempRoomName]->Handle_Game_Event(this->socket,message);
+		gameManagers[tempRoomName]->Handle_Game_Event(this->socket, message.substr(GAME_EVENT.length()));
 	}
 	else
 	{
@@ -59,8 +67,6 @@ void ClientEventHandler::Handle_Get_Chatting_Room()
 	{
 		for (auto& room : chatRooms)
 		{
-			std::cout << room.first << std::endl;
-			std::cout << Room_count[room.first];
 			if (Room_count[room.first] < 2)
 			{
 				room_List += room.first + "\n";
@@ -144,6 +150,10 @@ void ClientEventHandler::Handle_Join_Chatting_Room(const std::string& message)
 				if (socket != target_socket)
 				{
 					join_message = this->ID + " Joined.";
+					send(target_socket, join_message.c_str(), join_message.length(), 0);
+				
+					join_message = GAME_CLIENT_EVENT + LOAD_PLAYER + this->ID;
+					std::cout << join_message << std::endl;
 					send(target_socket, join_message.c_str(), join_message.length(), 0);
 				}
 			}

@@ -1,6 +1,7 @@
 #include <random>
 #include <chrono>
 #include "deck.h"
+#include <iostream>
 
 Deck::Deck()
 {
@@ -12,6 +13,7 @@ Deck::Deck()
 			cards.push_back(Card(i, j));
 		}
 	}
+	std::cout << "Cards Initalization done.\n";
 }
 
 void Deck::shuffleCard()

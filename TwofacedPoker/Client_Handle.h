@@ -16,9 +16,13 @@ const std::string GET_CHATTING_ROOM = "/Get_Chatting_Room";
 const std::string CREATE_CHATTING_ROOM = "/Create_Chatting_Room ";
 const std::string JOIN_CHATTING_ROOM = "/Join_Chatting_Room ";
 const std::string LOGIN = "/Login";
+const std::string LOAD_PLAYER = "Load_Player ";
+
+const std::string GAME_EVENT = "/Game_Client_Event ";
 
 void ConnectClient(SOCKET clientSocket);
-
+const std::map<std::string, std::set<SOCKET>>& GetChatRooms();
+const std::map<std::string, int>& GetRoomCounts();
 class ClientEventHandler
 {
 public:

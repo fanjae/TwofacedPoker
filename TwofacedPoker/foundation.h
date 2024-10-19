@@ -6,18 +6,28 @@
 class User
 {
 private:
-	std::string name;
+	std::string ID;
+	bool isReady;
 	int winCount;
 	int chips;
 
 public:
-	User(std::string name, int winCount) : name(name), winCount(winCount), chips(0) { }
+	User(std::string ID, bool isReady = false, int winCount = 0, int chips = 0) : ID(ID), isReady(isReady), winCount(winCount), chips(chips) { }
 
-	std::string getName() const {
-		return name;
+	std::string getID() const {
+		return ID;
 	}
+
+	bool getisReady() const {
+		return isReady;
+	}
+
 	int getwinCount() const {
 		return winCount;
+	}
+
+	int getchips() const {
+		return chips;
 	}
 };
 

@@ -133,12 +133,16 @@
     <ClCompile Include="Game_Manager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Client_Handle.cpp" />
+    <ClCompile Include="Packet.cpp" />
+    <ClCompile Include="Room_Manager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client_Handle.h" />
     <ClInclude Include="deck.h" />
     <ClInclude Include="foundation.h" />
     <ClInclude Include="Game_Manager.h" />
+    <ClInclude Include="Packet.h" />
+    <ClInclude Include="Room_Manager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -9,6 +9,6 @@ private:
 	std::vector<Card> cards;
 public:
 	Deck();
-
 	void shuffleCard();
+	void resupplyCard();
 };

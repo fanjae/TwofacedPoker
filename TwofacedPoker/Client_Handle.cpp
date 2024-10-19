@@ -1,20 +1,16 @@
 #include "Client_Handle.h"
 #include "Game_Manager.h"
+#include "Room_Manager.h"
+#include "Packet.h"
 
-static std::map<std::string, std::set<SOCKET>> chatRooms;
-static std::map<std::string, int> Room_count;
-static std::map<std::string, std::shared_ptr<Game_Manager>> gameManagers;
+static std::map<int, std::shared_ptr<Game_Manager>> gameManagers;
+static std::map<int, std::shared_ptr<Room_Manager>> roomManagers;
+
 static int clientNumber = 1;
+static int roomcountNumber = 1;
 
 std::mutex chatRoom_mutex;
-
-const std::map<std::string, std::set<SOCKET>>& GetChatRooms() {
-	return chatRooms;
-}
-
-const std::map<std::string, int>& GetRoomCounts() {
-	return Room_count;
-}
+std::mutex Room_mutex;
 
 ClientEventHandler::ClientEventHandler(SOCKET clientSocket) : socket(clientSocket) {}
 bool ClientEventHandler::handleMessage(const std::string& message)
@@ -31,6 +27,10 @@ bool ClientEventHandler::handleMessage(const std::string& message)
 	{
 		Handle_Login();
 	}
+	else if (message.substr(0, USER_UPDATE.length()) == USER_UPDATE)
+	{
+		Handle_User_Update();
+	}
 	else if (message.substr(0, CREATE_CHATTING_ROOM.length()) == CREATE_CHATTING_ROOM)
 	{
 		Handle_Create_Chatting_Room(message.substr(CREATE_CHATTING_ROOM.length()));
@@ -41,130 +41,135 @@ bool ClientEventHandler::handleMessage(const std::string& message)
 	}
 	else if (message.substr(0, CLOSE_SOCKET.length()) == CLOSE_SOCKET)
 	{
-		std::cout << "[Log] : Client disconnected : " << message << std::endl;
+		std::cout << "[System] : Client disconnected : " << message << std::endl;
 		return false;
 	}
 	else if (message.substr(0, GAME_EVENT.length()) == GAME_EVENT)
 	{
-		const std::string tempRoomName = this->roomName;
-		gameManagers[tempRoomName]->Handle_Game_Event(this->socket, message.substr(GAME_EVENT.length()));
+		const int temproomNumber = this->roomNumber;
+		gameManagers[temproomNumber]->Handle_Game_Event(this->socket, message.substr(GAME_EVENT.length()));
 	}
 	else
 	{
-		Handle_Room_Message(message);
+		std::string send_message = "[" + this->ID + "]" + message;
+		roomManagers[this->roomNumber]->broadcast_Message(send_message, this->socket, TargetType::ALL);
 	}
 	return true;
 }
+
 void ClientEventHandler::Handle_Get_Chatting_Room()
 {
 	std::string room_List = "";
-	std::cout << "[Log] : " << chatRooms.size() << std::endl;
-	if (chatRooms.empty())
+	if (roomManagers.empty())
 	{
 		room_List += NO_ROOM;
 	}
 	else
 	{
-		for (auto& room : chatRooms)
+		for (auto& room : roomManagers)
 		{
-			if (Room_count[room.first] < 2)
+			if (room.second->getroomCount() < 2)
 			{
-				room_List += room.first + "\n";
-				std::cout << room.first << std::endl;
+				room_List += std::to_string(room.first) + " " + room.second->getroomName() + "\n";
 			}
 		}
-		if (room_List == "")
-		{
-			room_List += NO_ROOM;
-		}
 	}
-	send(socket, room_List.c_str(), room_List.length(), 0);
+	if (room_List == "")
+	{
+		room_List += NO_ROOM;
+	}
+	
+	SendPacket(socket, room_List);
 }
+
+
 void ClientEventHandler::Handle_Exit_Room()
 {
-	std::cout << "[Log] : " << "Handle_exit_Room" << std::endl;
-	std::string exit_message = "";
-	for (SOCKET target_socket : chatRooms[this->roomName])
+	std::cout << "[System] : " << "Handle_exit_Room" << std::endl;
+	std::map<int, std::shared_ptr<Room_Manager>>::iterator it;
+
+	it = roomManagers.find(this->roomNumber);
+	if (it != roomManagers.end())
 	{
-		if (socket != target_socket)
+		std::cout << "[System] : Room Find.";
+		it->second->removeUser(this->ID, this->socket);
+		if (it->second->isroomEmpty() == true)
 		{
-			exit_message = this->ID + " exited.";
-			send(target_socket, exit_message.c_str(), exit_message.length(), 0);
+			roomManagers.erase(this->roomNumber);
+			gameManagers.erase(this->roomNumber);
+			this->roomNumber = 0;
 		}
 	}
+	else
+	{
+		std::cout << "[System] : Room Not Found";
+		return ;
+	}
+}
 
+void ClientEventHandler::Handle_Create_Chatting_Room(const std::string& roomName)
+{
 	const std::lock_guard<std::mutex> lock(chatRoom_mutex);
-	chatRooms[roomName].erase(this->socket);
-	Room_count[roomName]--;
-	if (chatRooms[roomName].empty())
-	{
-		chatRooms.erase(roomName);
-	}
-	if (Room_count[roomName] == 0)
-	{
-		gameManagers.erase(roomName);
-		Room_count.erase(roomName);
-	}
+	std::string send_message = std::to_string(roomcountNumber);
 
+	std::shared_ptr<Room_Manager> roomManager = Room_Manager::createRoom(roomcountNumber, roomName);
+	roomManagers[roomcountNumber] = roomManager;
+
+	std::shared_ptr<Game_Manager> gameManager = std::make_shared<Game_Manager>(roomcountNumber, roomManager);
+	gameManagers[roomcountNumber] = gameManager;
+	roomcountNumber++;
+
+	std::cout << "[System] : Room_Number : " << send_message << "Room_Name : " << roomName << std::endl;
+	SendPacket(this->socket, send_message);
 }
-void ClientEventHandler::Handle_Create_Chatting_Room(const std::string& message)
+
+void ClientEventHandler::Handle_Join_Chatting_Room(const std::string& roomNumber)
 {
-	this->roomName = message;
+	this->roomNumber = stoi(roomNumber);
 	std::string send_message = "";
 	{
 		const std::lock_guard<std::mutex> lock(chatRoom_mutex);
-		if (chatRooms.find(roomName) != chatRooms.end())
+		auto it = roomManagers.find(stoi(roomNumber));
+		if(it != roomManagers.end())
 		{
-			send_message = EXIST_ROOM;
-		}
-		else
-		{
-			std::cout << "[Log] : Client Create Room : " << message << std::endl;
+			send_message = it->second->getroomName();
+			SendPacket(this->socket, send_message);
 
-			chatRooms[message].insert(socket);
-			Room_count[message] = 0;
-
-			std::shared_ptr<Game_Manager> roomGameManager = std::make_shared<Game_Manager>(roomName);
-			gameManagers[roomName] = roomGameManager;
-
-			send_message = roomName;
-
-		}
-	}
-	send(socket, send_message.c_str(), send_message.length(), 0);
-}
-void ClientEventHandler::Handle_Join_Chatting_Room(const std::string& message)
-{
-	this->roomName = message;
-	std::string send_message = "";
-	std::string join_message = "";
-	{
-		const std::lock_guard<std::mutex> lock(chatRoom_mutex);
-		if (chatRooms.find(roomName) != chatRooms.end())
-		{
-			send_message = roomName;
-			chatRooms[message].insert(socket);
-			Room_count[message]++;
-			for (SOCKET target_socket : chatRooms[this->roomName])
-			{
-				if (socket != target_socket)
-				{
-					join_message = this->ID + " Joined.";
-					send(target_socket, join_message.c_str(), join_message.length(), 0);
-				
-					join_message = GAME_CLIENT_EVENT + LOAD_PLAYER + this->ID;
-					std::cout << join_message << std::endl;
-					send(target_socket, join_message.c_str(), join_message.length(), 0);
-				}
-			}
+			it->second->addUser(this->ID, this->socket);
+			send_message = this->ID + " Joined.";
+			it->second->broadcast_Message(send_message, this->socket, TargetType::OTHERS);
 		}
 		else
 		{
 			send_message = NOT_EXIST_ROOM;
+			SendPacket(socket, send_message);
 		}
 	}
+}
 
-	send(socket, send_message.c_str(), send_message.length(), 0);
+void ClientEventHandler::Handle_User_Update()
+{
+	std::cout << "[System] : " << "Handle_exit_Room" << std::endl;
+	std::map<int, std::shared_ptr<Room_Manager>>::iterator it;
+
+	it = roomManagers.find(this->roomNumber);
+	if (it != roomManagers.end())
+	{
+		if (it->second->getroomCount() > 1)
+		{
+			it->second->userUpdate(this->socket);
+		}
+		else
+		{
+			std::cerr << "[System] : Room Not Found";
+			return;
+		}
+	}
+	else
+	{
+		std::cerr << "[System] : Room Not Found";
+		return;
+	}
 }
 
 void ClientEventHandler::Handle_Login()
@@ -172,40 +177,22 @@ void ClientEventHandler::Handle_Login()
 	this->ID = "Guest" + std::to_string(clientNumber);
 	std::string send_message = "ID : " + this->ID;
 	clientNumber++;
-	send(socket, send_message.c_str(), send_message.length(), 0);
+	SendPacket(socket, send_message);
 }
 
-void ClientEventHandler:: Handle_Room_Message(const std::string& message)
-{
-	std::cout << "[Log] : roomName : " << this->roomName << "Message : " << message << std::endl;
-	std::string send_message = "[" + this->ID + "]" + message;
-
-	for (SOCKET target_socket : chatRooms[this->roomName])
-	{
-		send(target_socket, send_message.c_str(), send_message.length(), 0);
-	}
-}
 void ConnectClient(SOCKET clientSocket)
 {
 	ClientEventHandler handler(clientSocket);
-	char buffer[1024];
-	std::string str_buffer;
+	std::string message;
 
-	std::cout << "[Log] Client Connect! " << "clientSocket : " << clientSocket << std::endl;
-
+	std::cout << "[System] : Client Connect! " << "clientSocket : " << clientSocket << std::endl;
 	while (true)
 	{
-		bool message_handle = false;
-		int recv_length = recv(clientSocket, buffer, sizeof(buffer), 0);
-		if (recv_length <= 0)
-		{
-			break;
-		}
-		buffer[recv_length] = '\0';
-		str_buffer = buffer;
-
-		message_handle = handler.handleMessage(str_buffer);
-		if (!message_handle) break;
+		message = ReceivePacket(clientSocket);
+		if (message == "") break;
+		
+		handler.handleMessage(message);
 	}
+	std::cout << "Bye";
 	closesocket(clientSocket);
 }

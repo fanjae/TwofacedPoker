@@ -3,16 +3,30 @@
 #include "foundation.h"
 #include <iostream>
 Room_Manager::Room_Manager(const int roomNumber, const std::string& roomName) : roomNumber(roomNumber), roomName(roomName), roomCount(0) { }
+bool Room_Manager::Handle_Room_Event(const SOCKET& socket, const std::string& message)
+{
+	std::cout << message << std::endl;
+	if (message.substr(0, USER_READY_STATE.length()) == USER_READY_STATE)
+	{
+		Handle_User_Ready(socket, message.substr(USER_READY_STATE.length()));
+	}
+	return true;
+}
+
 std::shared_ptr<Room_Manager> Room_Manager::createRoom(const int roomNumber, const std::string& roomName)
 {
 	return std::make_shared<Room_Manager>(roomNumber, roomName);
 }
+
 void Room_Manager::broadcast_Message(const std::string& message, SOCKET sender_socket, TargetType target_type)
 {
-	for (SOCKET socket : sockets)
+	try
 	{
-		switch (target_type)
+
+		for (SOCKET socket : sockets)
 		{
+			switch (target_type)
+			{
 			case TargetType::SELF:
 				if (socket == sender_socket)
 				{
@@ -31,54 +45,41 @@ void Room_Manager::broadcast_Message(const std::string& message, SOCKET sender_s
 				std::cout << "[ID] : " << getUserIDFromSocket(socket) << "[Socket] : " << socket << "[Message] : " << message << std::endl;
 				SendPacket(socket, message);
 				break;
+			}
 		}
 	}
-}
-std::string Room_Manager::getUserIDFromSocket(const SOCKET& socket) const
-{
-	auto it = socketUserID.find(socket);
-	if (it != socketUserID.end())
+	catch(std::exception e)
 	{
-		return it->second;
+		std::cout << e.what() << std::endl;
 	}
-	return "";
 }
-std::pair<std::string, bool> Room_Manager::getOtherUserInfo(const std::string& userID)
+std::string Room_Manager::getUserIDFromSocket(const SOCKET& socket)
 {
-	for (auto& target_user : users)
-	{
-		std::string target_userID = target_user.first;
-		std::shared_ptr<User>& target_user_ptr = target_user.second;
-
-		if (userID != target_userID)
-		{
-			return { target_user_ptr->getID(), target_user_ptr->getisReady() };
-		}
-	}
-	return { "", false };
+	int userNumber = socketUserNumber[socket];
+	return users[userNumber]->getID();
 }
-std::pair<std::string, bool> Room_Manager::getThisUserInfo(const std::string& userID)
+std::pair<std::string, bool> Room_Manager::getThisUserInfo(int userNumber)
 {
-	return { users[userID]->getID(), users[userID]->getisReady() };
+	return { users[userNumber]->getID(), users[userNumber]->getisReady() };
 }
-void Room_Manager::addUser(const std::string& userID, SOCKET socket)
+void Room_Manager::addUser(int userNumber, const std::string& userID, SOCKET socket)
 {
-	users[userID] = std::make_shared<User>(userID);
+	users[userNumber] = std::make_shared<User>(userNumber,userID);
 	sockets.insert(socket);
-	socketUserID[socket] = userID;
+	socketUserNumber[socket] = userNumber;
 	roomCountSet("PLUS");
 }
-void Room_Manager::removeUser(const std::string& userID, SOCKET socket)
+void Room_Manager::removeUser(int userNumber, const std::string& userID, SOCKET socket)
 {
 	std::string exit_message = EXIT_ROOM_COMPLETE;
 	broadcast_Message(exit_message, socket,TargetType::SELF);
+	exit_message = users[userNumber]->getID() + " has exited.";
 
-	users.erase(userID);
+	users.erase(userNumber);
 	sockets.erase(socket);
-	socketUserID.erase(socket);
+	socketUserNumber.erase(socket);
 	roomCountSet("MINUS");
 
-	exit_message = userID + " has exited.";
 	std::cout << "System : " << exit_message << std::endl;
 	broadcast_Message(exit_message,socket,TargetType::OTHERS);
 }
@@ -91,8 +92,8 @@ void Room_Manager::userUpdate(SOCKET clientSocket)
 		{
 			if (target_socket == clientSocket)
 			{
-				std::string ID = getUserIDFromSocket(clientSocket);
-				std::pair<std::string, bool> userData = getThisUserInfo(ID);
+				int userNumber = socketUserNumber[clientSocket];
+				std::pair<std::string, bool> userData = getThisUserInfo(userNumber);
 
 				update_message = ROOM_CLIENT_EVENT + UPDATE_ID + userData.first;
 				std::cout << "Update_message : " << update_message << std::endl;
@@ -111,8 +112,8 @@ void Room_Manager::userUpdate(SOCKET clientSocket)
 			}
 			else
 			{
-				std::string ID = getUserIDFromSocket(target_socket);
-				std::pair<std::string, bool> userData = getThisUserInfo(ID);
+				int userNumber = socketUserNumber[target_socket];
+				std::pair<std::string, bool> userData = getThisUserInfo(userNumber);
 
 				update_message = ROOM_CLIENT_EVENT +  UPDATE_ID + userData.first;
 				std::cout << "Update_message : " << update_message << std::endl;
@@ -131,6 +132,39 @@ void Room_Manager::userUpdate(SOCKET clientSocket)
 			}
 		}
 	}
+}
+void Room_Manager::Handle_User_Ready(SOCKET clientSocket, const std::string& message)
+{
+	std::string update_message;
+	int userNumber = socketUserNumber[clientSocket];
+	if(roomCount > 1)
+	{
+		if (message == DONE)
+		{
+			update_message = ROOM_CLIENT_EVENT + UPDATE_READY_STATE + DONE;
+			users[userNumber]->setisReady(true);
+			std::cout << "Update_message : " << update_message << std::endl;
+		}
+		else if (message == READY)
+		{
+			update_message = ROOM_CLIENT_EVENT + UPDATE_READY_STATE + READY;
+			users[userNumber]->setisReady(false);
+			std::cout << "Update_message : " << update_message << std::endl;
+		}
+		broadcast_Message(update_message, clientSocket, TargetType::OTHERS);
+	}
+}
+bool Room_Manager::All_User_Start_Ready_State()
+{
+	bool start = true;
+	for (auto user : users)
+	{
+		if (user.second->getisReady() == false)
+		{
+			start = false;
+		}
+	}
+	return start;
 }
 bool Room_Manager::isroomEmpty() const
 {

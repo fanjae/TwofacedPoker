@@ -23,17 +23,20 @@ const std::string ROOM_EVENT = "/Room_Event ";
 const std::string GAME_EVENT = "/Game_Client_Event ";
 
 void ConnectClient(SOCKET clientSocket);
-const std::map<std::string, std::set<SOCKET>>& GetChatRooms();
-const std::map<std::string, int>& GetRoomCounts();
 class ClientEventHandler
 {
 public:
-	int getRoomNumber()
+	int getUserNumber() const
+	{
+		return this->userNumber;
+	}
+	int getRoomNumber() const
 	{
 		return this->roomNumber;
 	}
 private:
 	SOCKET socket;
+	int userNumber;
 	int roomNumber;
 	std::string ID;
 	
@@ -45,9 +48,7 @@ private:
 	void Handle_Login();
 public:
 	ClientEventHandler(SOCKET clientSocket);
-	bool handleMessage(const std::string& message);
-	void ReceivePacket(SOCKET clientSocket);
-	
+	bool handleMessage(const std::string& message);	
 };
 
 

@@ -1,14 +1,16 @@
 #pragma once
 #include <algorithm>
-#include <vector>
+#include <list>
 #include <random>
 #include "foundation.h"
 class Deck
 {
 private:
-	std::vector<Card> cards;
+	std::list<Card> cards;
 public:
 	Deck();
 	void shuffleCard();
 	void resupplyCard();
+	int getFrontCard();
+	int getBackCard();
 };

@@ -229,25 +229,7 @@ void Room_Manager::updateCards(SOCKET socket, GameType game_type, std::pair<int,
 
 	for (auto& pair : users) {
 		auto& user = pair.second;
-		/*
-		if (game_type == GameType::INIT)
-		{
-			std::array<int, 2>& selectedCard = (pair.first == getUserNumberFromSocket(socket)) ? myCard : otherCard;
-
-			user->setFrontCard(selectedCard[0]);
-			user->setBackCard(selectedCard[1]);
-
-			for (int i = 0; i < 2; i++)
-			{
-				send_message = GAME_CLIENT_EVENT + MY + CARD_UPDATE + positions[i] + std::to_string(selectedCard[i]);
-				broadcast_Message(send_message, socket, TargetType::SELF);
-			}
-			send_message = GAME_CLIENT_EVENT + OTHER + CARD_UPDATE + std::to_string(selectedCard[0]);
-			broadcast_Message(send_message, socket, TargetType::OTHERS);
-
-			send_message = GAME_CLIENT_EVENT + OTHER + CARD_UPDATE + std::to_string(selectedCard[0]);
-			broadcast_Message(send_message, socket, TargetType::OTHERS);
-		}*/
+		
 		if (pair.first == getUserNumberFromSocket(socket))
 		{
 			user->setFrontCard(myCard[0]);
@@ -260,7 +242,7 @@ void Room_Manager::updateCards(SOCKET socket, GameType game_type, std::pair<int,
 					broadcast_Message(send_message, socket, TargetType::SELF);
 					if (i == 0)
 					{
-						send_message = GAME_CLIENT_EVENT + OTHER + CARD_UPDATE + positions[i] + std::to_string(myCard[i]);
+						send_message = GAME_CLIENT_EVENT + OTHER + CARD_UPDATE + std::to_string(myCard[i]);
 						broadcast_Message(send_message, socket, TargetType::OTHERS);
 					}
 				}
@@ -278,7 +260,7 @@ void Room_Manager::updateCards(SOCKET socket, GameType game_type, std::pair<int,
 					broadcast_Message(send_message, socket, TargetType::OTHERS);
 					if (i == 0)
 					{
-						send_message = GAME_CLIENT_EVENT + OTHER + CARD_UPDATE + positions[i] + std::to_string(otherCard[i]);
+						send_message = GAME_CLIENT_EVENT + OTHER + CARD_UPDATE + std::to_string(otherCard[i]);
 						broadcast_Message(send_message, socket, TargetType::SELF);
 					}
 				}

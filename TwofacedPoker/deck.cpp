@@ -40,6 +40,7 @@ std::pair<int, int> Deck::DealCard()
 	data.first = getFrontCard();
 	data.second = getBackCard();
 
+	std::cout << "<Card> : Front : " << getFrontCard() << "Back : " << getBackCard() << std::endl;
 	cards.pop_front();
 	return data;
 }

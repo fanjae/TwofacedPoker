@@ -6,22 +6,6 @@
 #include <set>
 #include <mutex>
 
-const std::string CLOSE_SOCKET = "/Close_Socket";
-const std::string EXIST_ROOM = "/Exist_Room";
-const std::string NOT_EXIST_ROOM = "/Not_Exist_Room";
-const std::string NO_ROOM = "/No_Room";
-const std::string EXIT_ROOM = "/Exit_Room";
-const std::string GET_CHATTING_ROOM = "/Get_Chatting_Room";
-const std::string CREATE_CHATTING_ROOM = "/Create_Chatting_Room ";
-const std::string JOIN_CHATTING_ROOM = "/Join_Chatting_Room ";
-const std::string LOGIN = "/Login";
-const std::string USER_UPDATE = "/User_Update";
-
-const std::string LOAD_PLAYER = "Load_Player ";
-
-const std::string ROOM_EVENT = "/Room_Event ";
-const std::string GAME_EVENT = "/Game_Client_Event ";
-
 void ConnectClient(SOCKET clientSocket);
 class ClientEventHandler
 {

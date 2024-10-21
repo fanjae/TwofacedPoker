@@ -1,6 +1,27 @@
 // foundation.h
 #pragma once
 #include <string>
+enum class InitType
+{
+	INIT,
+	PROGRESS
+};
+
+enum class GameType
+{
+	WIN,
+	LOSE,
+	DRAW,
+	INIT
+};
+
+enum class BetType
+{
+	FRONT,
+	BOTH,
+	BACK,
+	NONE
+};
 
 class DualValue
 {
@@ -54,9 +75,10 @@ private:
 	int chips;
 	Bet bet_chips;
 	Card now_cards;
+	BetType bet_type;
 	
 public:
-	User(int userNumber, std::string ID, bool isReady = false, int winCount = 0, int chips = 0) : userNumber(userNumber), ID(ID), isReady(isReady), winCount(winCount), chips(chips), bet_chips(0, 0), now_cards(0, 0) { }
+	User(int userNumber, std::string ID, bool isReady = false, int winCount = 0, int chips = 0) : userNumber(userNumber), ID(ID), isReady(isReady), winCount(winCount), chips(chips), bet_chips(0, 0), now_cards(0, 0), bet_type(BetType::NONE) { }
 
 	int getuserNumber() const {
 		return userNumber;
@@ -74,12 +96,12 @@ public:
 		return winCount;
 	}
 
-	int getchips() const {
+	int getChips() const {
 		return chips;
 	}
 
-	void setchips(int value) {
-		this->winCount = value;
+	void setChips(int value) {
+		this->chips = value;
 	}
 	void setisReady(bool value) {
 		this->isReady = value;

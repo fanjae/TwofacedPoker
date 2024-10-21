@@ -5,6 +5,24 @@
 
 Deck::Deck()
 {
+	resupplyCard();
+	shuffleCard();
+}
+
+void Deck::shuffleCard()
+{
+	std::cout << "[Game] Now ShuffleCard\n" << std::endl;
+
+	std::vector<Card> vec(cards.begin(), cards.end());
+
+	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // 현재 시각 기반 시드 생성
+	std::shuffle(vec.begin(), vec.end(), std::default_random_engine(seed));
+
+	cards.assign(vec.begin(), vec.end());
+}
+
+void Deck::resupplyCard()
+{
 	for (int i = 1; i <= 10; i++)
 	{
 		for (int j = 1; j <= 10; j++)
@@ -15,9 +33,12 @@ Deck::Deck()
 	}
 	std::cout << "Cards Initalization done.\n";
 }
-
-void Deck::shuffleCard()
+/*
+int Deck::getFrontCard()
 {
-	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // 현재 시각 기반 시드 생성
-	std::shuffle(cards.begin(), cards.end(), std::default_random_engine(seed));
+	cards.front();
 }
+int Deck::getBackCard()
+{
+	cards.
+}*/

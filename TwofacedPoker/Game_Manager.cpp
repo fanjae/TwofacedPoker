@@ -2,90 +2,71 @@
 #include "Game_Manager.h"
 #include "Client_Handle.h"
 
-Game_Manager::Game_Manager(const std::string& roomName) : roomName(roomName), deck() {}
-bool Game_Manager::Handle_Game_Event(const SOCKET& socket, const std::string& message)
+Game_Manager::Game_Manager(const int roomNumber, std::shared_ptr<Room_Manager> roomManager) : roomNumber(roomNumber), roomManager(roomManager), isGamePlaying(false), deck(), dealerchips(0) {}
+bool Game_Manager::Handle_Game_Event(const SOCKET socket, const std::string& message)
 {
-	std::cout << message << std::endl;
-	if (message.substr(0, GAME_READY.length()) == GAME_READY)
+	if (message.substr(0, GAME_START.length()) == GAME_START)
 	{
-		Handle_Game_Ready(socket, message.substr(GAME_READY.length()));
-	}
-	if (message.substr(0, GAME_PRE_CALL.length()) == GAME_PRE_CALL)
-	{
-		Handle_Game_Pre_Call(socket, message.substr(GAME_PRE_CALL.length()));
-	}
-	if (message.substr(0, GAME_PRE_LOAD.length()) == GAME_PRE_LOAD)
-	{
-		Handle_Game_Pre_Load(socket, message.substr(GAME_PRE_LOAD.length()));
+		Handle_Game_Start(socket);
 	}
 	return true;
 }
-
-void Game_Manager::Handle_Game_Ready(const SOCKET& socket, const std::string& message)
+void Game_Manager::Handle_Game_Start(const SOCKET socket)
 {
-	const auto& rooms = GetChatRooms();
-	auto it = rooms.find(this->roomName);
-	std::string send_message = GAME_CLIENT_EVENT + message;
-
-	std::cout << send_message << std::endl;
-	for (SOCKET target_socket : it->second)
+	std::cout << "[System] : Game_Start Event " << std::endl;
+	std::string send_message;
+	if (roomManager->All_User_Start_Ready_State())
 	{
-		if (socket != target_socket)
-		{
-			send(target_socket, send_message.c_str(), send_message.length(), 0);
-		}
+		send_message = GAME_CLIENT_EVENT + START + DONE;
+		roomManager->broadcast_Message(send_message, socket, TargetType::ALL);
+
+		gameInit(socket, InitType::INIT);
+
+		send_message = GAME_CLIENT_EVENT + GAME_INIT;
+		roomManager->broadcast_Message(send_message, socket, TargetType::ALL);
+
+		send_message = GAME_CLIENT_EVENT + TURN + MY;
+		roomManager->broadcast_Message(send_message, socket, TargetType::SELF);
+
+		send_message = GAME_CLIENT_EVENT + TURN + OTHER;
+		roomManager->broadcast_Message(send_message, socket, TargetType::OTHERS);
+
 	}
-}
-void Game_Manager::Handle_Game_Pre_Call(const SOCKET& socket, const std::string& message)
-{
-	const auto& rooms = GetChatRooms();
-	const auto& room_counts = GetRoomCounts();
-
-	auto targetRoom = rooms.find(this->roomName);
-	auto targetRoom_count = room_counts.find(this->roomName);
-	std::string join_message;
-	for (SOCKET target_socket : targetRoom->second)
+	else
 	{
-		if (socket != target_socket && targetRoom_count->second > 1)
-		{
-			join_message = GAME_CLIENT_EVENT + GAME_PRE_LOAD_PLAYER;
-			std::cout << join_message << std::endl;
-			send(target_socket, join_message.c_str(), join_message.length(), 0);
-		}
+		send_message = GAME_CLIENT_EVENT + START + READY;
+		roomManager->broadcast_Message(send_message, socket, TargetType::ALL);
 	}
 }
 
-void Game_Manager::Handle_Game_Pre_Load(const SOCKET& socket, const std::string& message)
+void Game_Manager::gameInit(const SOCKET socket, InitType init_type)
 {
-	const auto& rooms = GetChatRooms();
-	auto it = rooms.find(this->roomName);
-	std::string send_message = "";
-
-	std::cout << "Message :" << message << std::endl;
-	std::cout << "Cut : " << message.substr(0, 3) <<std::endl;
-	if (message.substr(0, 3) == "ID ")
+	for (auto user : users)
 	{
-		send_message = GAME_CLIENT_EVENT + GAME_PRE_LOAD_ID_DONE + message.substr(3);
-		std::cout << send_message << std::endl;
-	}
-	else if (message.substr(0, 5) == "READY")
-	{
-		send_message = GAME_CLIENT_EVENT + GAME_PRE_LOAD_READY_DONE;
-		std::cout << send_message << std::endl;
-	}
-	else if (message.substr(0, 4) == "Done")
-	{
-		send_message = GAME_CLIENT_EVENT + GAME_PRE_LOAD_DONE_DONE;
-		std::cout << send_message.length() << std::endl;
-		std::cout << send_message << std::endl;
-	}
-
-	for (SOCKET target_socket : it->second)
-	{
-		if (socket != target_socket)
+		if (init_type == InitType::INIT)
 		{
-			send(target_socket, send_message.c_str(), send_message.length(), 0);
+			user.second->setchips(DEFAULT_CHIPS);
 		}
+		user.second->setFrontBet(0);
+		user.second->setBackBet(0);
+		user.second->setFrontCard(0);
+		user.second->setBackCard(0);
 	}
-
+	setdealerchips(0);
+}
+bool Game_Manager::getisGamePlaying()
+{
+	return this->isGamePlaying;
+}
+void Game_Manager::setisGamePlaying(bool value)
+{
+	this->isGamePlaying = value;
+}
+int Game_Manager::getdealerchips()
+{
+	return this->dealerchips;
+}
+void Game_Manager::setdealerchips(int value)
+{
+	this->dealerchips = value;
 }

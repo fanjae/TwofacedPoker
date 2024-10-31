@@ -39,12 +39,15 @@ public:
 
 	void addUser(int userNumber, const std::string& userID, SOCKET ID);
 	void removeUser(int userNumber, const std::string& userID, SOCKET ID);
-	void userUpdate(SOCKET ID);
-	void Handle_User_Ready(SOCKET ID, const std::string& message);
+	void userUpdate(const SOCKET ID);
+	void Handle_User_Ready(const SOCKET ID, const std::string& message);
 	void resetAllUsers(InitType init_type);
-	void updateChips(SOCKET ID, GameType game_type, int chipCount);
-	void updateCards(SOCKET ID, GameType game_type, std::pair<int, int>(&card_data)[2]);
+	void updateChips(const SOCKET ID, GameType game_type, int chipCount);
+	void updateCards(const SOCKET ID, GameType game_type, std::pair<int, int>(&card_data)[2]);
+	void updateBetInfo(const SOCKET ID, int count, BetType bet_type);
+	bool betChips(const SOCKET socket, int count, BetType bet_type);
 	
+
 	bool All_User_Start_Ready_State();
 	bool isroomEmpty() const;
 	int getroomCount() const;

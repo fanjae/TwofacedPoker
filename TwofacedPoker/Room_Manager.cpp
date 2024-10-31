@@ -91,7 +91,7 @@ void Room_Manager::removeUser(int userNumber, const std::string& userID, SOCKET 
 	std::cout << "System : " << exit_message << std::endl;
 	broadcast_Message(exit_message,socket,TargetType::OTHERS);
 }
-void Room_Manager::userUpdate(SOCKET clientSocket)
+void Room_Manager::userUpdate(const SOCKET clientSocket)
 {
 	std::string update_message;
 	if (roomCount > 1)
@@ -141,7 +141,7 @@ void Room_Manager::userUpdate(SOCKET clientSocket)
 		}
 	}
 }
-void Room_Manager::Handle_User_Ready(SOCKET clientSocket, const std::string& message)
+void Room_Manager::Handle_User_Ready(const SOCKET clientSocket, const std::string& message)
 {
 	std::string update_message;
 	int userNumber = socketUserNumber[clientSocket];
@@ -182,43 +182,47 @@ void Room_Manager::updateChips(const SOCKET socket, GameType game_type, int chip
 	std::string send_message;
 	int myChip = 0;
 	int otherChip = 0;
-	for (auto& pair : users) {
-
+	for (auto& pair : users) 
+	{
 		auto& user = pair.second;
 		if (pair.first == getUserNumberFromSocket(socket))
 		{
-			myChip = user->getChips();
-			myChip--;
 			if (game_type == GameType::INIT)
 			{
+				myChip = user->getChips();
+				myChip--;
 				user->setChips(myChip - 1);
-
-				send_message = GAME_CLIENT_EVENT + MY + CHIP_UPDATE + std::to_string(myChip);
-				broadcast_Message(send_message, socket, TargetType::SELF);
-
-				send_message = GAME_CLIENT_EVENT + OTHER + CHIP_UPDATE + std::to_string(myChip);
-				broadcast_Message(send_message, socket, TargetType::OTHERS);
 			}
+			if (game_type == GameType::BET)
+			{
+				myChip = user->getChips();
+				myChip -= chipCount;
+				user->setChips(myChip - chipCount);
+			}
+			send_message = GAME_CLIENT_EVENT + MY + CHIP_UPDATE + std::to_string(myChip);
+			broadcast_Message(send_message, socket, TargetType::SELF);
+
+			send_message = GAME_CLIENT_EVENT + OTHER + CHIP_UPDATE + std::to_string(myChip);
+			broadcast_Message(send_message, socket, TargetType::OTHERS);
 		}
 		else
 		{
-			otherChip = user->getChips();
-			otherChip--;
 			if (game_type == GameType::INIT)
 			{
-				user->setChips(otherChip - 1);
-
-				send_message = GAME_CLIENT_EVENT + MY + CHIP_UPDATE + std::to_string(otherChip);
-				broadcast_Message(send_message, socket, TargetType::OTHERS);
-
-				send_message = GAME_CLIENT_EVENT + OTHER + CHIP_UPDATE + std::to_string(otherChip);
-				broadcast_Message(send_message, socket, TargetType::SELF); 
+				otherChip = user->getChips();
+				otherChip--;
+				user->setChips(otherChip - 1); 
 			}
+			send_message = GAME_CLIENT_EVENT + MY + CHIP_UPDATE + std::to_string(otherChip);
+			broadcast_Message(send_message, socket, TargetType::OTHERS);
+
+			send_message = GAME_CLIENT_EVENT + OTHER + CHIP_UPDATE + std::to_string(otherChip);
+			broadcast_Message(send_message, socket, TargetType::SELF);
 		}
 	}
 }
 
-void Room_Manager::updateCards(SOCKET socket, GameType game_type, std::pair<int, int> (&card_data)[2])
+void Room_Manager::updateCards(const SOCKET socket, GameType game_type, std::pair<int, int> (&card_data)[2])
 {
 	std::lock_guard<std::mutex> lock(roomMutex);
 	std::string send_message;
@@ -227,7 +231,8 @@ void Room_Manager::updateCards(SOCKET socket, GameType game_type, std::pair<int,
 	std::array <int, 2> otherCard = { card_data[1].first,card_data[1].second };
 	std::array <std::string, 2> positions = { FRONT, BACK };
 
-	for (auto& pair : users) {
+	for (auto& pair : users) 
+	{
 		auto& user = pair.second;
 		
 		if (pair.first == getUserNumberFromSocket(socket))
@@ -264,6 +269,87 @@ void Room_Manager::updateCards(SOCKET socket, GameType game_type, std::pair<int,
 						broadcast_Message(send_message, socket, TargetType::SELF);
 					}
 				}
+			}
+		}
+	}
+}
+
+bool Room_Manager::betChips(const SOCKET socket, int count, BetType bet_type)
+{
+	std::string send_message = "";
+	std::shared_ptr<User> my_data;
+
+	BetType user_bet_type;
+	int user_chip_info[2];
+	int vs_chip_info[2];
+
+	for (auto& pair : users) 
+	{
+		auto& user = pair.second;
+		if (pair.first == getUserNumberFromSocket(socket))
+		{
+			my_data = user;
+			user_bet_type = user->getBetType();
+			user_chip_info[0] = max(user->getFrontBet(), user->getBackBet());	
+			user_chip_info[1] = user->getChips();
+		}
+		else
+		{
+			vs_chip_info[0] = max(user->getFrontBet(), user->getBackBet());
+			vs_chip_info[1] = user->getChips();
+		}
+	}
+
+	if (count > user_chip_info[1] || count > vs_chip_info[1])
+	{
+		send_message = GAME_CLIENT_EVENT + BETTING + IMPOSSIBLE;
+		return false;
+	}
+	else if (bet_type == BetType::BOTH && (count * 2 > user_chip_info[1] || count * 2 > vs_chip_info[1]))
+	{
+		send_message = GAME_CLIENT_EVENT + BETTING + IMPOSSIBLE;
+		return false;
+	}
+	else if (count + user_chip_info[0] < vs_chip_info[0])
+	{
+		send_message = GAME_CLIENT_EVENT + BETTING + IMPOSSIBLE;
+		return false;
+	}
+	else if (user_bet_type == BetType::NONE || user_bet_type != bet_type)
+	{
+		send_message = GAME_CLIENT_EVENT + BETTING + IMPOSSIBLE;
+		return false;
+	}
+	updateChips(socket, GameType::BET, count);
+	updateBetInfo(socket, count, bet_type);
+}
+
+void Room_Manager::updateBetInfo(const SOCKET socket, int count, BetType bet_type)
+{
+	std::string send_message = "";
+	for (auto& pair : users)
+	{
+		auto& user = pair.second;
+		if (pair.first == getUserNumberFromSocket(socket))
+		{
+			user->setBetType(bet_type);
+			if (BetType::FRONT == bet_type || BetType::BOTH == bet_type)
+			{
+				user->setFrontBet(user->getFrontBet() + count);
+				send_message = GAME_CLIENT_EVENT + MY + BET_UPDATE + FRONT +  std::to_string(count);
+				broadcast_Message(send_message, socket, TargetType::SELF);
+
+				send_message = GAME_CLIENT_EVENT + OTHER + BET_UPDATE + FRONT + std::to_string(count);
+				broadcast_Message(send_message, socket, TargetType::OTHERS);
+			}
+			if (BetType::BACK == bet_type || BetType::BOTH == bet_type)
+			{
+				user->setBackBet(user->getBackBet() + count);
+				send_message = GAME_CLIENT_EVENT + MY + BET_UPDATE + BACK + std::to_string(count);
+				broadcast_Message(send_message, socket, TargetType::SELF);
+
+				send_message = GAME_CLIENT_EVENT + OTHER + BET_UPDATE + BACK + std::to_string(count);
+				broadcast_Message(send_message, socket, TargetType::OTHERS);
 			}
 		}
 	}

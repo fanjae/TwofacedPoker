@@ -9,6 +9,10 @@ bool Game_Manager::Handle_Game_Event(const SOCKET socket, const std::string& mes
 	{
 		Handle_Game_Start(socket);
 	}
+	if (message.substr(0, BETTING.length()) == BETTING)
+	{
+		betUser(socket, message.substr(0, BETTING.length()));
+	}
 	return true;
 }
 void Game_Manager::Handle_Game_Start(const SOCKET socket)
@@ -71,6 +75,25 @@ void Game_Manager::giveCards(const SOCKET socket, GameType game_type)
 		card_data[1] = deck.DealCard();
 		roomManager->updateCards(socket, game_type, card_data);
 	}
+}
+void Game_Manager::betUser(const SOCKET socket, const std::string& message)
+{
+	std::string type[3] = { FRONT,BACK,BOTH };
+	int bet_message;
+	int bet_count;
+	for (int i = 0; i < 3; i++)
+	{
+		if (type[i] == message.substr(0, type[i].length()))
+		{
+			bet_message = i;
+			bet_count = stoi(message.substr(0, type[i].length()));
+		}
+	}
+	betChip(socket, bet_count,static_cast<BetType>(bet_message));
+}
+void Game_Manager::betChip(const SOCKET socket, int bet_count, BetType bet_type)
+{
+	roomManager->betChips(socket, bet_count, bet_type);
 }
 bool Game_Manager::getisGamePlaying()
 {

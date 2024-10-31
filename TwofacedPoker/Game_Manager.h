@@ -22,8 +22,9 @@ public:
 	void gameInit(const SOCKET socket, InitType init_type);
 	void giveBasicBetting(const SOCKET socket);
 	void giveCards(const SOCKET socket, GameType game_type);
-
+	void betUser(const SOCKET socket, const std::string& message);
 	
+	void betChip(const SOCKET socket, int bet_count, BetType bet_type);
 	bool getisGamePlaying();
 	void setisGamePlaying(bool value);
 	int getdealerchips();

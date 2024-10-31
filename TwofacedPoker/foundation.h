@@ -12,12 +12,13 @@ enum class GameType
 	WIN,
 	LOSE,
 	DRAW,
-	INIT
+	INIT,
+	BET
 };
 
 enum class BetType
 {
-	FRONT,
+	FRONT = 0,
 	BOTH,
 	BACK,
 	NONE
@@ -121,12 +122,10 @@ public:
 	void setBackBet(int value) {
 		bet_chips.setBack(value);
 	}
-	int getFrontCard() const
-	{
+	int getFrontCard() const {
 		return now_cards.getFront();
 	}
-	int getBackCard() const
-	{
+	int getBackCard() const	{
 		return now_cards.getBack();
 	}
 	void setFrontCard(int value) {
@@ -134,5 +133,12 @@ public:
 	}
 	void setBackCard(int value) {
 		now_cards.setBack(value);
+	}
+	BetType getBetType() {
+		return bet_type;
+	}
+	void setBetType(BetType betting_type)
+	{
+		this->bet_type = betting_type;
 	}
 };

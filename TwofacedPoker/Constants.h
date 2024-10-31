@@ -39,4 +39,6 @@ const std::string CARD_UPDATE = " Card_Update ";
 const std::string FRONT = "Front ";
 const std::string BACK = "Back ";
 const std::string BOTH = "Both ";
+const std::string BETTING = " Betting ";
+const std::string IMPOSSIBLE = "IMPOSSIBLE";
 

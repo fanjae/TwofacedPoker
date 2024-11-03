@@ -25,6 +25,7 @@ private:
 	std::map<SOCKET, int> socketUserNumber;
 	std::mutex roomMutex;
 
+	int dealerChips;
 	int roomNumber;
 	int roomCount;
 public:
@@ -44,9 +45,12 @@ public:
 	void resetAllUsers(InitType init_type);
 	void updateChips(const SOCKET ID, GameType game_type, int chipCount);
 	void updateCards(const SOCKET ID, GameType game_type, std::pair<int, int>(&card_data)[2]);
-	void updateBetInfo(const SOCKET ID, int count, BetType bet_type);
-	bool betChips(const SOCKET socket, int count, BetType bet_type);
-	
+	void updateBetInfo(const SOCKET socket, int count, BetType bet_type);
+	void printCard(const SOCKET socket);
+	GameType betChips(const SOCKET socket, int count, BetType bet_type);
+	GameType compareCard(const SOCKET socket, BetType bet_type);
+	GameType endCheck(const SOCKET socket);
+	void specialCase(const SOCKET socket);
 
 	bool All_User_Start_Ready_State();
 	bool isroomEmpty() const;
@@ -54,6 +58,8 @@ public:
 	std::string getroomName() const;
 	void roomCountSet(const std::string& type);
 
+	int getdealerchips();
+	void setdealerchips(int value);
 
 };
 

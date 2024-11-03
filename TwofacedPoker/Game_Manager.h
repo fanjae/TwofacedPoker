@@ -12,7 +12,8 @@ private:
 	int roomNumber;
 	std::shared_ptr<Room_Manager> roomManager;
 	bool isGamePlaying;
-	int dealerchips;
+	std::mutex gameMutex;
+	
 	Deck deck;
 
 public:
@@ -20,13 +21,12 @@ public:
 	bool Handle_Game_Event(const SOCKET socket, const std::string& message);
 	void Handle_Game_Start(const SOCKET socket);
 	void gameInit(const SOCKET socket, InitType init_type);
-	void giveBasicBetting(const SOCKET socket);
+	void giveBasicBetting(const SOCKET socket, GameType game_type);
 	void giveCards(const SOCKET socket, GameType game_type);
 	void betUser(const SOCKET socket, const std::string& message);
-	
 	void betChip(const SOCKET socket, int bet_count, BetType bet_type);
+	GameType battleCard(const SOCKET socket, BetType bet_type);
+
 	bool getisGamePlaying();
 	void setisGamePlaying(bool value);
-	int getdealerchips();
-	void setdealerchips(int value);
 };

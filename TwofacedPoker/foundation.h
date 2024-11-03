@@ -9,11 +9,19 @@ enum class InitType
 
 enum class GameType
 {
+	BOTHWIN,
+	BOTHLOSE,
 	WIN,
 	LOSE,
 	DRAW,
 	INIT,
-	BET
+	BET,
+	CALL,
+	RAISE,
+	IMPOSSIBLE,
+	FINALWIN,
+	FINALLOSE,
+	PROGRESS
 };
 
 enum class BetType
@@ -21,8 +29,11 @@ enum class BetType
 	FRONT = 0,
 	BOTH,
 	BACK,
+	DIE,
+	SPECIAL,
 	NONE
 };
+
 
 class DualValue
 {

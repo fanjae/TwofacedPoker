@@ -31,6 +31,7 @@ void Deck::resupplyCard()
 			cards.push_back(Card(i, j));
 		}
 	}
+	shuffleCard();
 	std::cout << "Cards Initalization done.\n";
 }
 

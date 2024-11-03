@@ -32,13 +32,31 @@ const std::string GAME_INIT = "Game_Init";
 const std::string TURN = "Turn ";
 const std::string MY = "My";
 const std::string OTHER = "Other";
+const std::string DEALER = "Dealer";
 
 const std::string BASIC_BETTING = "Basic_Betting";
 const std::string CHIP_UPDATE = " Chip_Update ";
 const std::string CARD_UPDATE = " Card_Update ";
+const std::string BET_UPDATE = " Bet_Update ";
 const std::string FRONT = "Front ";
 const std::string BACK = "Back ";
 const std::string BOTH = "Both ";
 const std::string BETTING = " Betting ";
-const std::string IMPOSSIBLE = "IMPOSSIBLE";
+const std::string IMPOSSIBLE = "Impossible";
+const std::string BATTLE = "Battle";
+const std::string PRINT = " Print ";
+const std::string WAIT = "Wait";
+
+const std::string GAME_RESULT = "Game_result ";
+const std::string WIN = "Win";
+const std::string DRAW = "Draw";
+const std::string LOSE = "Lose";
+const std::string BOTHWIN = "BothWin";
+const std::string BOTHLOSE = "BothLose";
+const std::string FINALWIN = "FinalWin";
+const std::string FINALLOSE = "FinalLose";
+const std::string PROGRESS = "Progress";
+const std::string DIE = "Die";
+
+const std::string SPECIAL = "SPECIAL ";
 

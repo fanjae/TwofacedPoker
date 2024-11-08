@@ -31,14 +31,30 @@ void Deck::resupplyCard()
 			cards.push_back(Card(i, j));
 		}
 	}
+	shuffleCard();
 	std::cout << "Cards Initalization done.\n";
 }
-/*
-int Deck::getFrontCard()
+
+std::pair<int, int> Deck::DealCard()
 {
-	cards.front();
+	std::pair<int, int> data;
+	data.first = getFrontCard();
+	data.second = getBackCard();
+
+	std::cout << "<Card> : Front : " << getFrontCard() << "Back : " << getBackCard() << std::endl;
+	cards.pop_front();
+	return data;
 }
-int Deck::getBackCard()
+int Deck::getFrontCard() const
 {
-	cards.
-}*/
+	return cards.front().getFront();
+}
+int Deck::getBackCard() const
+{
+	return cards.front().getBack();
+}
+
+bool Deck::cardEmpty() const
+{
+	return cards.empty();
+}

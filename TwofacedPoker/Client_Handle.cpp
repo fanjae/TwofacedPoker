@@ -2,6 +2,7 @@
 #include "Game_Manager.h"
 #include "Room_Manager.h"
 #include "Packet.h"
+#include "Constants.h"
 
 static std::map<int, std::shared_ptr<Game_Manager>> gameManagers;
 static std::map<int, std::shared_ptr<Room_Manager>> roomManagers;
@@ -48,9 +49,9 @@ bool ClientEventHandler::handleMessage(const std::string& message)
 	{
 		roomManagers[this->roomNumber]->Handle_Room_Event(this->socket, message.substr(ROOM_EVENT.length()));
 	}
-	else if (message.substr(0, GAME_EVENT.length()) == GAME_EVENT)
+	else if (message.substr(0, GAME_CLIENT_EVENT.length()) == GAME_CLIENT_EVENT)
 	{
-		gameManagers[this->roomNumber]->Handle_Game_Event(this->socket, message.substr(GAME_EVENT.length()));
+		gameManagers[this->roomNumber]->Handle_Game_Event(this->socket, message.substr(GAME_CLIENT_EVENT.length()));
 	}
 	else
 	{

@@ -138,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client_Handle.h" />
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="deck.h" />
     <ClInclude Include="foundation.h" />
     <ClInclude Include="Game_Manager.h" />

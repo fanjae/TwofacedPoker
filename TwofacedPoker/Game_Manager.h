@@ -1,34 +1,19 @@
 #pragma once
 #include "deck.h"
 #include "Room_Manager.h"
+#include "Constants.h"
 #include <string>
 #include <map>
 #include <winsock2.h>
-
-const int DEFAULT_CHIPS = 30;
-const std::string GAME_READY = "Game_Ready ";
-const std::string GAME_START = "Game_Start";
-const std::string GAME_CLIENT_EVENT = "/Game_Client_Event ";
-const std::string START = "Start ";
-const std::string GAME_INIT = "Game_Init";
-const std::string TURN = "Turn ";
-const std::string MY = "My";
-const std::string OTHER = "Other";
-
-enum class InitType
-{
-	INIT,
-	PROGRESS
-};
 
 class Game_Manager
 {
 private:
 	int roomNumber;
 	std::shared_ptr<Room_Manager> roomManager;
-	std::map<int, std::shared_ptr<User>> users;
 	bool isGamePlaying;
-	int dealerchips;
+	std::mutex gameMutex;
+	
 	Deck deck;
 
 public:
@@ -36,8 +21,12 @@ public:
 	bool Handle_Game_Event(const SOCKET socket, const std::string& message);
 	void Handle_Game_Start(const SOCKET socket);
 	void gameInit(const SOCKET socket, InitType init_type);
+	void giveBasicBetting(const SOCKET socket, GameType game_type);
+	void giveCards(const SOCKET socket, GameType game_type);
+	void betUser(const SOCKET socket, const std::string& message);
+	void betChip(const SOCKET socket, int bet_count, BetType bet_type);
+	GameType battleCard(const SOCKET socket, BetType bet_type);
+
 	bool getisGamePlaying();
 	void setisGamePlaying(bool value);
-	int getdealerchips();
-	void setdealerchips(int value);
 };

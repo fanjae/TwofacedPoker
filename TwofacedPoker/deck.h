@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <list>
 #include <random>
+#include <algorithm>
 #include "foundation.h"
 class Deck
 {
@@ -11,6 +12,8 @@ public:
 	Deck();
 	void shuffleCard();
 	void resupplyCard();
-	int getFrontCard();
-	int getBackCard();
+	std::pair<int, int> DealCard();
+	int getFrontCard() const;
+	int getBackCard() const;
+	bool cardEmpty() const;
 };

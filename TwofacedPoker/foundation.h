@@ -1,6 +1,39 @@
 // foundation.h
 #pragma once
 #include <string>
+enum class InitType
+{
+	INIT,
+	PROGRESS
+};
+
+enum class GameType
+{
+	BOTHWIN,
+	BOTHLOSE,
+	WIN,
+	LOSE,
+	DRAW,
+	INIT,
+	BET,
+	CALL,
+	RAISE,
+	IMPOSSIBLE,
+	FINALWIN,
+	FINALLOSE,
+	PROGRESS
+};
+
+enum class BetType
+{
+	FRONT = 0,
+	BOTH,
+	BACK,
+	DIE,
+	SPECIAL,
+	NONE
+};
+
 
 class DualValue
 {
@@ -54,9 +87,10 @@ private:
 	int chips;
 	Bet bet_chips;
 	Card now_cards;
+	BetType bet_type;
 	
 public:
-	User(int userNumber, std::string ID, bool isReady = false, int winCount = 0, int chips = 0) : userNumber(userNumber), ID(ID), isReady(isReady), winCount(winCount), chips(chips), bet_chips(0, 0), now_cards(0, 0) { }
+	User(int userNumber, std::string ID, bool isReady = false, int winCount = 0, int chips = 0) : userNumber(userNumber), ID(ID), isReady(isReady), winCount(winCount), chips(chips), bet_chips(0, 0), now_cards(0, 0), bet_type(BetType::NONE) { }
 
 	int getuserNumber() const {
 		return userNumber;
@@ -74,12 +108,12 @@ public:
 		return winCount;
 	}
 
-	int getchips() const {
+	int getChips() const {
 		return chips;
 	}
 
-	void setchips(int value) {
-		this->winCount = value;
+	void setChips(int value) {
+		this->chips = value;
 	}
 	void setisReady(bool value) {
 		this->isReady = value;
@@ -99,12 +133,10 @@ public:
 	void setBackBet(int value) {
 		bet_chips.setBack(value);
 	}
-	int getFrontCard() const
-	{
+	int getFrontCard() const {
 		return now_cards.getFront();
 	}
-	int getBackCard() const
-	{
+	int getBackCard() const	{
 		return now_cards.getBack();
 	}
 	void setFrontCard(int value) {
@@ -112,5 +144,12 @@ public:
 	}
 	void setBackCard(int value) {
 		now_cards.setBack(value);
+	}
+	BetType getBetType() {
+		return bet_type;
+	}
+	void setBetType(BetType betting_type)
+	{
+		this->bet_type = betting_type;
 	}
 };

@@ -471,7 +471,7 @@ GameType Room_Manager::betChips(const SOCKET socket, int count, BetType bet_type
 		broadcast_Message(send_message, socket, TargetType::SELF);
 		return GameType::IMPOSSIBLE;
 	}
-	else if (bet_type == BetType::BOTH && ((count * 2 > user_chip_info[1]) || (count * 2 + user_chip_info[0] > vs_chip_info[0] + vs_chip_info[1])))
+	else if (bet_type == BetType::BOTH && ((count * 2 > user_chip_info[1]) || (count + user_chip_info[0] > vs_chip_info[0] + vs_chip_info[1])))
 	{
 		std::cout << "IMPOSSIBLE case2" << std::endl;
 		send_message = GAME_CLIENT_EVENT + BETTING + IMPOSSIBLE;
@@ -544,10 +544,10 @@ void Room_Manager::updateBetInfo(const SOCKET socket, int count, BetType bet_typ
 			}
 			if (BetType::BOTH == bet_type)
 			{
-				send_message = GAME_CLIENT_EVENT + MY + BET_UPDATE + BOTH;
+				send_message = GAME_CLIENT_EVENT + BOTH + MY;
 				broadcast_Message(send_message, socket, TargetType::SELF);
 
-				send_message = GAME_CLIENT_EVENT + OTHER + BET_UPDATE + BOTH;
+				send_message = GAME_CLIENT_EVENT + BOTH + OTHER;
 				broadcast_Message(send_message, socket, TargetType::OTHERS);
 			}
 		}
@@ -569,12 +569,17 @@ GameType Room_Manager::compareCard(const SOCKET socket, BetType bet_type)
 			bet_type_info[0] = user->getBetType();
 			user_card_info[0] = user->getFrontCard();
 			user_card_info[1] = user->getBackCard();
+			
+			user->setBetType(BetType::NONE);
+
 		}
 		else
 		{
 			bet_type_info[1] = user->getBetType();
 			vs_card_info[0] = user->getFrontCard();
 			vs_card_info[1] = user->getBackCard();
+
+			user->setBetType(BetType::NONE);
 		}
 	}
 
@@ -635,7 +640,7 @@ GameType Room_Manager::compareCard(const SOCKET socket, BetType bet_type)
 			}
 			else
 			{
-				return GameType::WIN;
+				return GameType::LOSE;
 			}
 		}
 	}
@@ -708,9 +713,6 @@ void Room_Manager::specialCase(const SOCKET socket)
 		}
 	}
 }
-
-
-
 
 bool Room_Manager::All_User_Start_Ready_State()
 {

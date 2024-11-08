@@ -63,7 +63,6 @@ void Game_Manager::giveBasicBetting(const SOCKET socket, GameType game_type)
 
 	if (game_type == GameType::DRAW)
 	{
-		roomManager->updateChips(socket, GameType::INIT, 1);
 		giveCards(socket, GameType::INIT);
 	}
 	else
@@ -84,6 +83,9 @@ void Game_Manager::giveCards(const SOCKET socket, GameType game_type)
 	if (deck.cardEmpty())
 	{
 		deck.resupplyCard();
+		card_data[0] = deck.DealCard();
+		card_data[1] = deck.DealCard();
+		roomManager->updateCards(socket, game_type, card_data);
 	}
 	else
 	{
@@ -181,6 +183,9 @@ void Game_Manager::betChip(const SOCKET socket, int bet_count, BetType bet_type)
 
 			if (check_win == GameType::FINALWIN || check_win == GameType::FINALLOSE)
 			{
+				send_message = GAME_CLIENT_EVENT + GAME_INIT;
+				roomManager->broadcast_Message(send_message, socket, TargetType::ALL);
+
 				send_message = GAME_CLIENT_EVENT + SPECIAL + MY;
 				roomManager->broadcast_Message(send_message, socket, TargetType::SELF);
 

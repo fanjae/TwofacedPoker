@@ -1,4 +1,4 @@
-#include <random>
+ï»¿#include <random>
 #include <chrono>
 #include "deck.h"
 #include <iostream>
@@ -15,7 +15,7 @@ void Deck::shuffleCard()
 
 	std::vector<Card> vec(cards.begin(), cards.end());
 
-	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // ÇöÀç ½Ã°¢ ±â¹İ ½Ãµå »ı¼º
+	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count(); // í˜„ì¬ ì‹œê° ê¸°ë°˜ ì‹œë“œ ìƒì„±
 	std::shuffle(vec.begin(), vec.end(), std::default_random_engine(seed));
 
 	cards.assign(vec.begin(), vec.end());
@@ -27,18 +27,9 @@ void Deck::resupplyCard()
 	{
 		for (int j = 1; j <= 10; j++)
 		{
-			if (i == j) continue; // ¼­·Î ¾Õ µŞ¸é ¼­·Î ¼ıÀÚ
+			if (i == j) continue; // ì„œë¡œ ì• ë’·ë©´ ì„œë¡œ ìˆ«ì
 			cards.push_back(Card(i, j));
 		}
 	}
 	std::cout << "Cards Initalization done.\n";
 }
-/*
-int Deck::getFrontCard()
-{
-	cards.front();
-}
-int Deck::getBackCard()
-{
-	cards.
-}*/

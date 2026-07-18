@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <iostream>
 #include <string>
 #include <winsock2.h>
@@ -34,6 +34,7 @@ public:
 	{
 		return this->roomNumber;
 	}
+	void Disconnect();
 private:
 	SOCKET socket;
 	int userNumber;
@@ -46,6 +47,7 @@ private:
 	void Handle_Join_Chatting_Room(const std::string& message);
 	void Handle_User_Update();
 	void Handle_Login();
+	
 public:
 	ClientEventHandler(SOCKET clientSocket);
 	bool handleMessage(const std::string& message);	

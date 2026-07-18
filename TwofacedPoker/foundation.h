@@ -1,4 +1,4 @@
-// foundation.h
+ï»¿// foundation.h
 #pragma once
 #include <string>
 
@@ -28,14 +28,14 @@ public:
 	}
 };
 
-// Ä«µå °ü·Ã
+// ì¹´ë“œ ê´€ë ¨
 class Card : public DualValue
 {
 public:
 	Card(int front, int back) : DualValue(front, back) { }
 };
 
-// º£ÆÃµÈ Ä¨ °ü·Ã
+// ë² íŒ…ëœ ì¹© ê´€ë ¨
 class Bet : public DualValue
 {
 public:
@@ -43,7 +43,7 @@ public:
 
 };
 
-// À¯Àú ÀÌ¸§°ú ½Â¸® È½¼ö Ç¥±â
+// ìœ ì € ì´ë¦„ê³¼ ìŠ¹ë¦¬ íšŸìˆ˜ í‘œê¸°
 class User
 {
 private:
@@ -79,7 +79,7 @@ public:
 	}
 
 	void setchips(int value) {
-		this->winCount = value;
+		this->chips = value;
 	}
 	void setisReady(bool value) {
 		this->isReady = value;

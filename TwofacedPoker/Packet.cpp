@@ -1,4 +1,4 @@
-#include "Packet.h"
+﻿#include "Packet.h"
 #include <iostream>
 #include <WinSock2.h>
 std::string ReceivePacket(SOCKET clientSocket)
@@ -18,6 +18,7 @@ std::string ReceivePacket(SOCKET clientSocket)
 	{
 		std::cerr << "Recive : Error" << strerror_s(errorMessage, sizeof(errorMessage), errorCode) << std::endl;
 		return "";
+
 	}
 
 	Packet_length = ntohl(Packet_length);

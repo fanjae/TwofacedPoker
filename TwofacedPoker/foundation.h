@@ -1,4 +1,4 @@
-// foundation.h
+ï»¿// foundation.h
 #pragma once
 #include <string>
 enum class InitType
@@ -7,21 +7,36 @@ enum class InitType
 	PROGRESS
 };
 
-enum class GameType
+enum class BetResult
 {
-	BOTHWIN,
-	BOTHLOSE,
+	CALL,
+	RAISE,
+	IMPOSSIBLE
+};
+
+enum class MatchResult
+{
+	FINAL_WIN,
+	FINAL_LOSE,
+	PROGRESS,
+	IMPOSSIBLE
+};
+
+enum class RoundResult
+{
+	BOTH_WIN,
+	BOTH_LOSE,
 	WIN,
 	LOSE,
 	DRAW,
+	IMPOSSIBLE
+};
+
+enum class GameType
+{
 	INIT,
 	BET,
-	CALL,
-	RAISE,
 	IMPOSSIBLE,
-	FINALWIN,
-	FINALLOSE,
-	PROGRESS
 };
 
 enum class BetType
@@ -61,14 +76,14 @@ public:
 	}
 };
 
-// Ä«µå °ü·Ã
+// ì¹´ë“œ ê´€ë ¨
 class Card : public DualValue
 {
 public:
 	Card(int front, int back) : DualValue(front, back) { }
 };
 
-// º£ÆÃµÈ Ä¨ °ü·Ã
+// ë² íŒ…ëœ ì¹© ê´€ë ¨
 class Bet : public DualValue
 {
 public:
@@ -76,7 +91,7 @@ public:
 
 };
 
-// À¯Àú ÀÌ¸§°ú ½Â¸® È½¼ö Ç¥±â
+// ìœ ì € ì´ë¦„ê³¼ ìŠ¹ë¦¬ íšŸìˆ˜ í‘œê¸°
 class User
 {
 private:

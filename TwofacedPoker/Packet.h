@@ -1,5 +1,12 @@
-#pragma once
+﻿#pragma once
+
+#include <WinSock2.h>
+#include <cstdint>
+#include <optional>
 #include <string>
-#include <winsock2.h>
-std::string ReceivePacket(SOCKET clientSocket);
-void SendPacket(SOCKET clientSocket, const std::string& message);
+#include <string_view>
+
+constexpr std::uint32_t MAX_PACKET_SIZE = 1024;
+
+std::optional<std::string> ReceivePacket(SOCKET socket); 
+bool SendPacket(SOCKET socket, std::string_view message);

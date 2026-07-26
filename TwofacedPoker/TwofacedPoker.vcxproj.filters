@@ -15,45 +15,52 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="deck.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Game_Manager.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Client_Handle.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Room_Manager.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Packet.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="deck.h">
+    <ClInclude Include="Common\Constants.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="foundation.h">
+    <ClInclude Include="Common\Foundation.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Client_Handle.h">
+    <ClInclude Include="Game\BettingRules.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Game_Manager.h">
+    <ClInclude Include="Game\Deck.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Room_Manager.h">
+    <ClInclude Include="Game\GameManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Packet.h">
+    <ClInclude Include="Game\GameSession.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Constants.h">
+    <ClInclude Include="Game\RoundResolver.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\SettlementRules.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\ClientConnection.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\ClientHandle.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\ClientWorkerManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Protocol\BetCommandParser.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Protocol\ClientCommandParser.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Protocol\Packet.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Room\RoomManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Room\RoomRegistry.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

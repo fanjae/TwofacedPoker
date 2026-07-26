@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <string>
 
 const int DEFAULT_CHIPS = 30;
@@ -13,9 +13,8 @@ const std::string CREATE_CHATTING_ROOM = "/Create_Chatting_Room ";
 const std::string JOIN_CHATTING_ROOM = "/Join_Chatting_Room ";
 const std::string LOGIN = "/Login";
 const std::string USER_UPDATE = "/User_Update";
-const std::string LOAD_PLAYER = "Load_Player ";
 
-const std::string ROOM_EVENT = "/Room_Event ";;
+const std::string ROOM_EVENT = "/Room_Event ";
 const std::string EXIT_ROOM_COMPLETE = "/Exit_Room_Complete";
 const std::string ROOM_CLIENT_EVENT = "/Room_Event ";
 const std::string UPDATE_ID = "Update_ID ";
@@ -25,8 +24,8 @@ const std::string READY = "READY";
 const std::string DONE = "DONE";
 
 const std::string GAME_CLIENT_EVENT = "/Game_Client_Event ";
-const std::string GAME_READY = "Game_Ready ";
 const std::string GAME_START = "Game_Start";
+const std::string GAME_ABORTED = "Game_Aborted";
 const std::string START = "Start ";
 const std::string GAME_INIT = "Game_Init";
 const std::string TURN = "Turn ";
@@ -55,7 +54,6 @@ const std::string BOTHWIN = "BothWin";
 const std::string BOTHLOSE = "BothLose";
 const std::string FINALWIN = "FinalWin";
 const std::string FINALLOSE = "FinalLose";
-const std::string PROGRESS = "Progress";
 const std::string DIE = "Die";
 
 const std::string SPECIAL = "SPECIAL ";

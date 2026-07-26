@@ -32,13 +32,6 @@ enum class RoundResult
 	IMPOSSIBLE
 };
 
-enum class GameType
-{
-	INIT,
-	BET,
-	IMPOSSIBLE,
-};
-
 enum class BetType
 {
 	FRONT = 0,
@@ -59,19 +52,23 @@ protected:
 public:
 	DualValue(int front, int back) : front(front), back(back) {}
 
-	int getFront() const {
+	int getFront() const 
+	{
 		return front;
 	}
 
-	int getBack() const {
+	int getBack() const 
+	{
 		return back;
 	}
 
-	void setFront(int value) {
+	void setFront(int value) 
+	{
 		front = value;
 	}
 
-	void setBack(int value) {
+	void setBack(int value) 
+	{
 		back = value;
 	}
 };
@@ -107,30 +104,37 @@ private:
 public:
 	User(int userNumber, std::string ID, bool isReady = false, int winCount = 0, int chips = 0) : userNumber(userNumber), ID(ID), isReady(isReady), winCount(winCount), chips(chips), bet_chips(0, 0), now_cards(0, 0), bet_type(BetType::NONE) { }
 
-	int getuserNumber() const {
+	int getuserNumber() const 
+	{
 		return userNumber;
 	}
 
-	std::string getID() const {
+	std::string getID() const 
+	{
 		return ID;
 	}
 
-	bool getisReady() const {
+	bool getisReady() const 
+	{
 		return isReady;
 	}
 
-	int getwinCount() const {
+	int getwinCount() const 
+	{
 		return winCount;
 	}
 
-	int getChips() const {
+	int getChips() const 
+	{
 		return chips;
 	}
 
-	void setChips(int value) {
+	void setChips(int value) 
+	{
 		this->chips = value;
 	}
-	void setisReady(bool value) {
+	void setisReady(bool value) 
+	{
 		this->isReady = value;
 	}
 
@@ -142,25 +146,32 @@ public:
 	{
 		return bet_chips.getBack();
 	}
-	void setFrontBet(int value) {
+	void setFrontBet(int value) 
+	{
 		bet_chips.setFront(value);
 	}
-	void setBackBet(int value) {
+	void setBackBet(int value) 
+	{
 		bet_chips.setBack(value);
 	}
-	int getFrontCard() const {
+	int getFrontCard() const 
+	{
 		return now_cards.getFront();
 	}
-	int getBackCard() const	{
+	int getBackCard() const
+	{
 		return now_cards.getBack();
 	}
-	void setFrontCard(int value) {
+	void setFrontCard(int value) 
+	{
 		now_cards.setFront(value);
 	}
-	void setBackCard(int value) {
+	void setBackCard(int value) 
+	{
 		now_cards.setBack(value);
 	}
-	BetType getBetType() {
+	BetType getBetType() 
+	{
 		return bet_type;
 	}
 	void setBetType(BetType betting_type)

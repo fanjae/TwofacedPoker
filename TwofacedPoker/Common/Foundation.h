@@ -1,4 +1,4 @@
-// foundation.h
+ï»¿// foundation.h
 #pragma once
 #include <string>
 enum class InitType
@@ -7,21 +7,29 @@ enum class InitType
 	PROGRESS
 };
 
-enum class GameType
+enum class BetResult
 {
-	BOTHWIN,
-	BOTHLOSE,
+	CALL,
+	RAISE,
+	IMPOSSIBLE
+};
+
+enum class MatchResult
+{
+	FINAL_WIN,
+	FINAL_LOSE,
+	PROGRESS,
+	IMPOSSIBLE
+};
+
+enum class RoundResult
+{
+	BOTH_WIN,
+	BOTH_LOSE,
 	WIN,
 	LOSE,
 	DRAW,
-	INIT,
-	BET,
-	CALL,
-	RAISE,
-	IMPOSSIBLE,
-	FINALWIN,
-	FINALLOSE,
-	PROGRESS
+	IMPOSSIBLE
 };
 
 enum class BetType
@@ -44,31 +52,35 @@ protected:
 public:
 	DualValue(int front, int back) : front(front), back(back) {}
 
-	int getFront() const {
+	int getFront() const 
+	{
 		return front;
 	}
 
-	int getBack() const {
+	int getBack() const 
+	{
 		return back;
 	}
 
-	void setFront(int value) {
+	void setFront(int value) 
+	{
 		front = value;
 	}
 
-	void setBack(int value) {
+	void setBack(int value) 
+	{
 		back = value;
 	}
 };
 
-// Ä«µå °ü·Ã
+// ì¹´ë“œ ê´€ë ¨
 class Card : public DualValue
 {
 public:
 	Card(int front, int back) : DualValue(front, back) { }
 };
 
-// º£ÆÃµÈ Ä¨ °ü·Ã
+// ë² íŒ…ëœ ì¹© ê´€ë ¨
 class Bet : public DualValue
 {
 public:
@@ -76,7 +88,7 @@ public:
 
 };
 
-// À¯Àú ÀÌ¸§°ú ½Â¸® È½¼ö Ç¥±â
+// ìœ ì € ì´ë¦„ê³¼ ìŠ¹ë¦¬ íšŸìˆ˜ í‘œê¸°
 class User
 {
 private:
@@ -92,30 +104,37 @@ private:
 public:
 	User(int userNumber, std::string ID, bool isReady = false, int winCount = 0, int chips = 0) : userNumber(userNumber), ID(ID), isReady(isReady), winCount(winCount), chips(chips), bet_chips(0, 0), now_cards(0, 0), bet_type(BetType::NONE) { }
 
-	int getuserNumber() const {
+	int getuserNumber() const 
+	{
 		return userNumber;
 	}
 
-	std::string getID() const {
+	std::string getID() const 
+	{
 		return ID;
 	}
 
-	bool getisReady() const {
+	bool getisReady() const 
+	{
 		return isReady;
 	}
 
-	int getwinCount() const {
+	int getwinCount() const 
+	{
 		return winCount;
 	}
 
-	int getChips() const {
+	int getChips() const 
+	{
 		return chips;
 	}
 
-	void setChips(int value) {
+	void setChips(int value) 
+	{
 		this->chips = value;
 	}
-	void setisReady(bool value) {
+	void setisReady(bool value) 
+	{
 		this->isReady = value;
 	}
 
@@ -127,25 +146,32 @@ public:
 	{
 		return bet_chips.getBack();
 	}
-	void setFrontBet(int value) {
+	void setFrontBet(int value) 
+	{
 		bet_chips.setFront(value);
 	}
-	void setBackBet(int value) {
+	void setBackBet(int value) 
+	{
 		bet_chips.setBack(value);
 	}
-	int getFrontCard() const {
+	int getFrontCard() const 
+	{
 		return now_cards.getFront();
 	}
-	int getBackCard() const	{
+	int getBackCard() const
+	{
 		return now_cards.getBack();
 	}
-	void setFrontCard(int value) {
+	void setFrontCard(int value) 
+	{
 		now_cards.setFront(value);
 	}
-	void setBackCard(int value) {
+	void setBackCard(int value) 
+	{
 		now_cards.setBack(value);
 	}
-	BetType getBetType() {
+	BetType getBetType() 
+	{
 		return bet_type;
 	}
 	void setBetType(BetType betting_type)

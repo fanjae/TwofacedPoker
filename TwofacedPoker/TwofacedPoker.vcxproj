@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -17,6 +17,41 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Common\Constants.h" />
+    <ClInclude Include="Common\Foundation.h" />
+    <ClInclude Include="Game\BettingRules.h" />
+    <ClInclude Include="Game\Deck.h" />
+    <ClInclude Include="Game\GameManager.h" />
+    <ClInclude Include="Game\GameSession.h" />
+    <ClInclude Include="Game\RoundResolver.h" />
+    <ClInclude Include="Game\SettlementRules.h" />
+    <ClInclude Include="Network\ClientConnection.h" />
+    <ClInclude Include="Network\ClientHandle.h" />
+    <ClInclude Include="Network\ClientWorkerManager.h" />
+    <ClInclude Include="Protocol\BetCommandParser.h" />
+    <ClInclude Include="Protocol\ClientCommandParser.h" />
+    <ClInclude Include="Protocol\Packet.h" />
+    <ClInclude Include="Room\RoomManager.h" />
+    <ClInclude Include="Room\RoomRegistry.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Game\BettingRules.cpp" />
+    <ClCompile Include="Game\Deck.cpp" />
+    <ClCompile Include="Game\GameManager.cpp" />
+    <ClCompile Include="Game\GameSession.cpp" />
+    <ClCompile Include="Game\RoundResolver.cpp" />
+    <ClCompile Include="Game\SettlementRules.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Network\ClientConnection.cpp" />
+    <ClCompile Include="Network\ClientHandle.cpp" />
+    <ClCompile Include="Network\ClientWorkerManager.cpp" />
+    <ClCompile Include="Protocol\BetCommandParser.cpp" />
+    <ClCompile Include="Protocol\ClientCommandParser.cpp" />
+    <ClCompile Include="Protocol\Packet.cpp" />
+    <ClCompile Include="Room\RoomManager.cpp" />
+    <ClCompile Include="Room\RoomRegistry.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -104,6 +139,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -119,6 +155,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -128,22 +165,6 @@
       <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="deck.cpp" />
-    <ClCompile Include="Game_Manager.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Client_Handle.cpp" />
-    <ClCompile Include="Packet.cpp" />
-    <ClCompile Include="Room_Manager.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Client_Handle.h" />
-    <ClInclude Include="deck.h" />
-    <ClInclude Include="foundation.h" />
-    <ClInclude Include="Game_Manager.h" />
-    <ClInclude Include="Packet.h" />
-    <ClInclude Include="Room_Manager.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

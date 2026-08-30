@@ -21,18 +21,17 @@
 서버는 TCP 기반 클라이언트-서버 구조로 동작합니다.
 
 ```text
-┌──────────────┐      TCP      ┌─────────────────────────────┐
-│ Windows      │ ◀───────────▶ │ TwoFacedPoker Server        │
+┌──────────────┐      TCP       ┌─────────────────────────────┐
+│ Windows      │ ◀───────────▶│ TwoFacedPoker Server        │
 │ Client × N   │                │                             │
 └──────────────┘                │ Main accept loop            │
                                 │ ├─ Client worker × N        │
                                 │ │  └─ Client sender thread  │
                                 │ └─ Shared RoomRegistry      │
                                 │    ├─ RoomManager × N       │
-                                │    └─ GameManager × N        │
+                                │    └─ GameManager × N       │
                                 └─────────────────────────────┘
 ```
-
 - 메인 스레드는 IPv4 TCP 소켓을 열고 클라이언트 연결을 수락합니다.
 - 클라이언트마다 수신 및 이벤트 처리를 담당하는 worker를 생성합니다.
 - 연결별 sender thread와 송신 큐를 사용해 여러 게임 이벤트의 전송을 직렬화합니다.
@@ -43,32 +42,27 @@
 ## 실행 방법
 
 ### 사전 요구 사항
-
 - Windows
 - Visual Studio 2022
-- `Desktop development with C++` 워크로드
 - MSVC v143 빌드 도구
 - Windows 10 SDK 이상
 
 ### Visual Studio에서 실행
-
 1. `TwofacedPoker.sln`을 Visual Studio 2022에서 엽니다.
 2. 플랫폼을 `x64`, 구성을 `Debug` 또는 `Release`로 선택합니다.
 3. 프로젝트 속성의 `Debugging > Command Arguments`에 서버 포트를 입력합니다. 예: `9190`
 4. 빌드 후 실행합니다.
 
 서버는 실행 시 포트 번호를 반드시 하나의 인자로 받아야 합니다.
-
 ```text
 TwofacedPoker.exe <port>
 ```
 
 예를 들어 Release 빌드 결과를 직접 실행할 때는 다음과 같습니다.
-
 ```powershell
 .\x64\Release\TwofacedPoker.exe 9190
-```
 
+```
 - 포트는 `1`부터 `65535` 사이의 숫자여야 합니다.
 - 서버는 사용 가능한 모든 로컬 IPv4 주소(`0.0.0.0`)에서 연결을 수신합니다.
 - 서버를 정상 종료하려면 콘솔에서 `Ctrl+C` 또는 `Ctrl+Break`를 입력합니다.
@@ -87,7 +81,6 @@ port=9190
 같은 PC에서 테스트할 때는 `127.0.0.1`을 사용하고, 다른 PC에서 접속할 때는 서버 PC의 IPv4 주소를 사용합니다.
 
 ## 구현 기능
-
 | 기능 | 설명 |
 |---|---|
 | 서버 수신 | 지정 포트에서 IPv4 TCP 연결 수락 및 다중 클라이언트 처리 |
@@ -105,7 +98,6 @@ port=9190
 ## 네트워크 및 프로토콜
 
 ### 패킷 형식
-
 모든 패킷은 4바이트 길이 헤더와 문자열 본문으로 구성됩니다.
 
 | 구간 | 크기 | 설명 |
@@ -118,7 +110,6 @@ port=9190
 - 송신 큐는 연결별 최대 `256`개 메시지로 제한하며, 큐가 초과하면 해당 연결을 종료 대상으로 처리합니다.
 
 ### 주요 명령 범주
-
 | 범주 | 예시 |
 |---|---|
 | 로그인 및 연결 | `/Login`, `/Close_Socket` |
@@ -131,7 +122,6 @@ port=9190
 게임 이벤트에는 준비 상태, 게임 시작, 턴 변경, 기본 베팅, 카드·칩·베팅 상태 갱신, 카드 공개, 라운드 결과 및 최종 결과가 포함됩니다.
 
 ## 프로젝트 구조
-
 ```text
 TwofacedPoker/
 ├── Common/
@@ -160,7 +150,6 @@ TwofacedPoker/
 ```
 
 ## 리팩토링 변경 사항
-
 - 게임 진행 책임을 `GameManager` 오케스트레이션 계층으로 분리했습니다.
 - 게임 상태와 턴 전환을 `GameSession`으로 캡슐화했습니다.
 - 베팅 판정, 라운드 결과, 칩 정산 규칙을 각각의 모듈로 분리했습니다.
@@ -170,13 +159,10 @@ TwofacedPoker/
 - 서버 종료 시 수신·송신 소켓을 종료하고 worker thread를 join하도록 정리했습니다.
 
 ## 관련 저장소
-
 - [TwoFacedPoker Client](https://github.com/fanjae/TwofacedPoker_Client)
 
 ## 개발 일지
-
 - [TwoFacedPoker 개발일지 Blog](https://fanjae.tistory.com/category/Projects/Two%20Faced%20Poker)
 
 ## 플레이 영상
-
 - 준비 중

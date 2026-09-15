@@ -165,4 +165,4 @@ TwofacedPoker/
 - [TwoFacedPoker 개발일지 Blog](https://fanjae.tistory.com/category/Projects/Two%20Faced%20Poker)
 
 ## 플레이 영상
-- 준비 중
+- [플레이 영상](https://youtu.be/CBQlnrXCDQQ?si=X5Cua2wXGq2qEz2h)
